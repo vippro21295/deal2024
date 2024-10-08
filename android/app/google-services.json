@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "208719854429",
+    "project_id": "deal-phattien",
+    "storage_bucket": "deal-phattien.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:208719854429:android:cdedaf26e9b58ad27346b4",
+        "android_client_info": {
+          "package_name": "com.phattien.deal.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQ98r2XedUMZ6y3qEd5jxs2lLvgvWLuaw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
