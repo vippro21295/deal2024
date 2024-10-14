@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dealxemay_2024/firebase_options.dart';
 import 'package:flutter_dealxemay_2024/login.dart';
 import 'package:flutter_dealxemay_2024/services/notification_service.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
+
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 }
@@ -15,21 +18,23 @@ void main() async {
 
   var firebaseMessaging = FirebaseMessaging.instance;
   await firebaseMessaging.requestPermission(
-      alert: true,
-      announcement: true,
-      badge: true,
-      carPlay: false,
-      criticalAlert: true,
-      provisional: false,
-      sound: true);
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
 
   String token = await firebaseMessaging.getToken() ?? "";
 
-  print("token $token");
 
-  await PushNotification.initNotification();
+  await NotificationService.init();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   runApp(MyApp(
     tokenFirebase: token,
@@ -49,13 +54,15 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      PushNotification.showNotification();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {    
+      NotificationService.showInstantNotification("${message.notification?.title}", "${message.notification?.body}");
     });
+
+    FlutterNativeSplash.remove();
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {   
     return MaterialApp(
       title: 'Notification Motor',
       debugShowCheckedModeBanner: false,
@@ -64,8 +71,7 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
       home: LoginScreen(token: widget.tokenFirebase),
+      //home: const HomeWiget()
     );
   }
 }
-
-

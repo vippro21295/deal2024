@@ -1,9 +1,10 @@
 import 'dart:convert';
+import 'package:flutter_dealxemay_2024/home.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './services/globals.dart';
-import './web_view.dart';
+
 
 class LoginScreen extends StatefulWidget {
   final String token;
@@ -17,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
   late bool _rememberMe = false;
+  late bool _obscureText = true;
 
   @override
   void initState() {
@@ -27,6 +29,12 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
   }
 
   Future<void> loadUserCredentials() async {
@@ -86,11 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
           saveUserCredentials(username, password);
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-                builder: (context) => WebViewDeal(
-                      username: username,
-                      password: password,
-                    )),
+            MaterialPageRoute(builder: (context) => const HomeWiget()),
           );
         }
       } else {
@@ -108,13 +112,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> saveUserCredentials(username, password) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('username', username);
+    await prefs.setString('password', password);
     if (_rememberMe) {
-      await prefs.setString('username', username);
-      await prefs.setString('password', password);
       await prefs.setBool('remember_me', true);
     } else {
-      await prefs.remove('username');
-      await prefs.remove('password');
       await prefs.setBool('remember_me', false);
     }
   }
@@ -172,11 +174,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     filled: true,
                     hintText: "Tài khoản",
                     hintStyle:
-                        const TextStyle(color: Colors.white, fontSize: 13),
+                        const TextStyle(color: Colors.white, fontSize: 16),
                     prefixIcon: const Icon(
                       Icons.people,
                       color: Colors.white,
-                      size: 15,
+                      size: 18,
                     ),
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(40),
@@ -193,18 +195,26 @@ class _LoginScreenState extends State<LoginScreen> {
             child: SizedBox(
               height: height * 0.07,
               child: TextFormField(
-                obscureText: true,
+                obscureText: _obscureText,
                 controller: password,
                 decoration: InputDecoration(
                     fillColor: const Color.fromARGB(255, 173, 218, 255),
                     filled: true,
                     hintText: "Mật khẩu",
                     hintStyle:
-                        const TextStyle(color: Colors.white, fontSize: 13),
+                        const TextStyle(color: Colors.white, fontSize: 16),
                     prefixIcon: const Icon(
                       Icons.lock,
                       color: Colors.white,
-                      size: 15,
+                      size: 18,
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility : Icons.visibility_off,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      onPressed: _togglePasswordVisibility,
                     ),
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(40),

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
-//import 'package:flutter/scheduler.dart';
 
 class WebViewDeal extends StatefulWidget {
   final String username;
@@ -40,8 +39,11 @@ class _WebViewDealState extends State<WebViewDeal> {
       ..loadRequest(Uri.parse('https://sales.phattien.com'))
       ..setNavigationDelegate(
         NavigationDelegate(
-          onPageFinished: (_) {
-            executeJavaScript();
+          onPageFinished: (String url) {
+            if (url == "https://sales.phattien.com/User/Login" ||
+                url == "https://sales.phattien.com/User/Login?ReturnUrl=%2f") {
+              executeJavaScriptLogin();
+            }
           },
         ),
       );
@@ -61,11 +63,11 @@ class _WebViewDealState extends State<WebViewDeal> {
     _controller = controller;
   }
 
-  Future<void> executeJavaScript() async {
+  Future<void> executeJavaScriptLogin() async {
     var username = widget.username;
     var password = widget.password;
 
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
 
     await _controller.runJavaScript(
         "document.getElementsByName('UserName')[0].setAttribute('value','$username');"
@@ -76,8 +78,28 @@ class _WebViewDealState extends State<WebViewDeal> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: WebViewWidget(
-        controller: _controller,
+      appBar: AppBar(
+        title: const Text(
+          "Trang chủ",
+          style: TextStyle(
+           color: Color.fromARGB(255, 41, 34, 246),
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        backgroundColor: const Color.fromARGB(255, 183, 183, 183),
+      ),
+      body: SafeArea(
+        child: WebViewWidget(
+          controller: _controller,
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _controller.reload();
+        },
+        backgroundColor: const Color.fromARGB(255, 167, 216, 251),
+        child: const Icon(Icons.replay),
       ),
     );
   }
