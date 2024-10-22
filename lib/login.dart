@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './services/globals.dart';
 
-
 class LoginScreen extends StatefulWidget {
-  final String token;
-  const LoginScreen({super.key, required this.token});
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -19,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController password = TextEditingController();
   late bool _rememberMe = false;
   late bool _obscureText = true;
+  late String token = '';
 
   @override
   void initState() {
@@ -40,6 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> loadUserCredentials() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
+      token = prefs.getString('token') ?? '';
       username.text = prefs.getString('username') ?? '';
       password.text = prefs.getString('password') ?? '';
       _rememberMe = prefs.getBool('remember_me') ?? false;
@@ -77,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
     var queryParameters = {
       'username': username,
       'password': password,
-      'token': widget.token
+      'token': token
     };
 
     var uri =
@@ -95,6 +95,10 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const HomeWiget()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(data['message'])),
           );
         }
       } else {

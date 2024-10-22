@@ -63,16 +63,24 @@ class _WebViewDealState extends State<WebViewDeal> {
     _controller = controller;
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> executeJavaScriptLogin() async {
-    var username = widget.username;
+   var username = widget.username;
     var password = widget.password;
 
-    await Future.delayed(const Duration(seconds: 2));
-
+    await Future.delayed(const Duration(seconds: 1));
     await _controller.runJavaScript(
-        "document.getElementsByName('UserName')[0].setAttribute('value','$username');"
-        "document.getElementsByName('PassWord')[0].setAttribute('value','$password');"
-        "document.getElementsByClassName('submit')[0].click()");
+        "document.getElementsByName('UserName')[0].setAttribute('value','$username');");
+    await Future.delayed(const Duration(seconds: 1));
+    await _controller.runJavaScript(
+        "document.getElementsByName('PassWord')[0].setAttribute('value','$password');");
+    await Future.delayed(const Duration(seconds: 1));
+    await _controller
+        .runJavaScript("document.getElementsByClassName('submit')[0].click()");
   }
 
   @override

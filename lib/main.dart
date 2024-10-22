@@ -5,7 +5,7 @@ import 'package:flutter_dealxemay_2024/firebase_options.dart';
 import 'package:flutter_dealxemay_2024/login.dart';
 import 'package:flutter_dealxemay_2024/services/notification_service.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -29,21 +29,21 @@ void main() async {
 
   String token = await firebaseMessaging.getToken() ?? "";
 
-
   await NotificationService.init();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  runApp(MyApp(
-    tokenFirebase: token,
-  ));
+  // luu token
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  pref.setString('token', token);
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  final String tokenFirebase;
-  const MyApp({super.key, required this.tokenFirebase});
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -54,15 +54,21 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {    
-      NotificationService.showInstantNotification("${message.notification?.title}", "${message.notification?.body}");
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      NotificationService.showInstantNotification(
+          "${message.notification?.title}", "${message.notification?.body}");
     });
 
     FlutterNativeSplash.remove();
   }
 
   @override
-  Widget build(BuildContext context) {   
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Notification Motor',
       debugShowCheckedModeBanner: false,
@@ -70,7 +76,7 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: LoginScreen(token: widget.tokenFirebase),
+      home: const LoginScreen(),
       //home: const HomeWiget()
     );
   }

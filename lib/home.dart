@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dealxemay_2024/alert.dart';
+import 'package:flutter_dealxemay_2024/login.dart';
+import 'package:flutter_dealxemay_2024/setting.dart';
 import 'package:flutter_dealxemay_2024/web_view.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +18,7 @@ class _HomeWigetState extends State<HomeWiget> {
       PersistentTabController(initialIndex: 0);
   late String username = "";
   late String password = "";
+  late String tokenLogin = "";
   bool isLoading = true;
 
   @override
@@ -29,9 +32,17 @@ class _HomeWigetState extends State<HomeWiget> {
     super.dispose();
   }
 
+  Future<void> _logout() async {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const LoginScreen()));
+  }
+
   getInitUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
+      tokenLogin = prefs.getString('token') ?? '';
       username = prefs.getString('username') ?? '';
       password = prefs.getString('password') ?? '';
       isLoading = false;
@@ -42,7 +53,7 @@ class _HomeWigetState extends State<HomeWiget> {
     return [
       WebViewDeal(username: username, password: password),
       AlertContent(username: username),
-      const Text('Tinh nang chua hoan thien'),
+      Setting(onLogout: _logout),
     ];
   }
 

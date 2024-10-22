@@ -69,6 +69,7 @@ class _AlertContentState extends State<AlertContent> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<DataAlert>>(
@@ -103,6 +104,11 @@ class _AlertContentState extends State<AlertContent> {
                   itemBuilder: (context, index) {
                     final item = data[index];
                     return ListTile(
+                      tileColor: (){
+                        if(index % 2 != 0){
+                          return const Color.fromARGB(255, 207, 206, 206);
+                        }
+                      }(),
                       leading: () {
                         if (item.messageStatus == 'N') {
                           return const Icon(Icons.phone, color: Colors.black);
