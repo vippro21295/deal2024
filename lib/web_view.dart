@@ -69,12 +69,15 @@ class _WebViewDealState extends State<WebViewDeal> {
   }
 
   Future<void> executeJavaScriptLogin() async {
-   var username = widget.username;
+    var username = widget.username;
     var password = widget.password;
 
     await Future.delayed(const Duration(seconds: 1));
     await _controller.runJavaScript(
         "document.getElementsByName('UserName')[0].setAttribute('value','$username');");
+    await Future.delayed(const Duration(seconds: 1));
+    await _controller.runJavaScript(
+        "document.getElementsByName('PassWord')[0].setAttribute('value','$password');");
     await Future.delayed(const Duration(seconds: 1));
     await _controller.runJavaScript(
         "document.getElementsByName('PassWord')[0].setAttribute('value','$password');");
@@ -90,7 +93,7 @@ class _WebViewDealState extends State<WebViewDeal> {
         title: const Text(
           "Trang chủ",
           style: TextStyle(
-           color: Color.fromARGB(255, 41, 34, 246),
+            color: Color.fromARGB(255, 41, 34, 246),
             fontSize: 20,
             fontWeight: FontWeight.w700,
           ),
