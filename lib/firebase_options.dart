@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
     appId: '1:208719854429:android:cdedaf26e9b58ad27346b4',
     messagingSenderId: '208719854429',
     projectId: 'deal-phattien',
-    storageBucket: 'deal-phattien.appspot.com',
+    storageBucket: 'deal-phattien.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -62,7 +62,7 @@ class DefaultFirebaseOptions {
     appId: '1:208719854429:ios:ca47b7850a8dcc477346b4',
     messagingSenderId: '208719854429',
     projectId: 'deal-phattien',
-    storageBucket: 'deal-phattien.appspot.com',
+    storageBucket: 'deal-phattien.firebasestorage.app',
     iosBundleId: 'com.phattien.deal',
   );
 

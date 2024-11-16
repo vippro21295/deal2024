@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dealxemay_2024/alert.dart';
+import 'package:flutter_dealxemay_2024/hotline.dart';
 import 'package:flutter_dealxemay_2024/login.dart';
 import 'package:flutter_dealxemay_2024/provider/data_provider.dart';
 import 'package:flutter_dealxemay_2024/setting.dart';
@@ -52,6 +53,7 @@ class _HomeWigetState extends State<HomeWiget> {
   List<Widget> _buildScreen() {
     return [
       WebViewDeal(username: username, password: password),
+      Hotline(username: username),
       AlertContent(key: UniqueKey(), username: username),
       Setting(onLogout: _logout),
     ];
@@ -62,6 +64,11 @@ class _HomeWigetState extends State<HomeWiget> {
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.home),
         title: "Trang chủ",
+        inactiveColorPrimary: Colors.white,
+      ),
+      PersistentBottomNavBarItem(
+        icon: const Icon(Icons.phone),
+        title: "Hotline",
         inactiveColorPrimary: Colors.white,
       ),
       PersistentBottomNavBarItem(
