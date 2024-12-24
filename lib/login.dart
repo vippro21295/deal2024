@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_dealxemay_2024/home.dart';
+import 'package:flutter_dealxemay_2024/services/toastCustom.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -91,26 +92,24 @@ class _LoginScreenState extends State<LoginScreen> {
         var data = jsonDecode(response.body);
         if (!mounted) return;
         if (data['isError'] == false) {
+          ToastsCustom.showToastSucess("Đăng nhập thành công", context);
           saveUserCredentials(username, password);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const HomeWiget()),
           );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(data['message'])),
-          );
+        } else {      
+          ToastsCustom.showToastError(data['message'], context);
         }
       } else {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Không thể đăng nhập vào tài khoản')),
-        );
+        if (!mounted) return;    
+        ToastsCustom.showToastError('Không thể đăng nhập vào tài khoản', context);
       }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Lỗi: ${error.toString()}')),
       );
+       ToastsCustom.showToastError('Lỗi: ${error.toString()}', context);
     }
   }
 

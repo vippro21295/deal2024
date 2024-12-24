@@ -12,6 +12,7 @@ class DataHotline {
   late final String lichSuChuyenDeal;
   late final String interestingLevel;
   late final bool isRecived;
+  late final String statusName;
   late final String status;
   DataHotline({
     required this.custID,
@@ -26,6 +27,7 @@ class DataHotline {
     required this.lichSuChuyenDeal,
     required this.interestingLevel,
     required this.isRecived,
+    required this.statusName,
     required this.status,
   });
 
@@ -44,6 +46,7 @@ class DataHotline {
         lichSuChuyenDeal: json['LichSuChuyenDeal'] as String,
         interestingLevel: json['InterestingLevel'] as String,
         isRecived: json['IsRecived'] as bool,
-        status: json['StatusName'] as String);
+        statusName: json['StatusName'] as String,
+        status: json['Status'] as String);
   }
 }

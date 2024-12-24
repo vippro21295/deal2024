@@ -1,10 +1,10 @@
 import 'dart:convert';
 import "package:flutter/material.dart";
 import 'package:flutter_dealxemay_2024/models/data_hotline.dart';
-import 'package:flutter_dealxemay_2024/services/toasts.dart';
-import 'package:flutter_dealxemay_2024/update_customer.dart';
+import 'package:flutter_dealxemay_2024/services/toastCustom.dart';
+import 'package:flutter_dealxemay_2024/hotline/update_customer.dart';
 import 'package:http/http.dart' as http;
-import './services/globals.dart';
+import '../services/globals.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -18,7 +18,7 @@ class Hotline extends StatefulWidget {
 
 class _HotlineState extends State<Hotline> {
   late Future<List<DataHotline>> _dataFuture;
-  DateTime fromDate = DateTime.now().add(const Duration(days: -6));
+  DateTime fromDate = DateTime.now().add(const Duration(days: -10));
   DateTime toDate = DateTime.now();
   String? selectedType = 'CC';
   TextEditingController searchController = TextEditingController();
@@ -98,10 +98,9 @@ class _HotlineState extends State<Hotline> {
         var data = jsonDecode(response.body); // Giai ma JSON
         if (!mounted) return;
         if (data['isError'] == false) {
-          ToastService.showToastSucess(data['message']);
           _refreshData();
         } else {
-          ToastService.showToastError(data['message']);
+          ToastsCustom.showToastError(data['message'], context);
         }
       } else {
         throw Exception('Error from API');
@@ -120,7 +119,8 @@ class _HotlineState extends State<Hotline> {
       await launchUrl(callUri);
     } else {
       // Nếu không mở được ứng dụng gọi điện
-      ToastService.showToastError("Không mở được ứng dụng gọi điện");
+      if (!mounted) return;
+      ToastsCustom.showToastError("Không mở được ứng dụng gọi điện", context);
     }
   }
 
@@ -150,8 +150,8 @@ class _HotlineState extends State<Hotline> {
                 "Hotline",
                 style: TextStyle(
                     color: Color.fromARGB(255, 41, 34, 246),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600),
               ),
               actions: [
                 IconButton(
@@ -209,7 +209,7 @@ class _HotlineState extends State<Hotline> {
                                         ),
                                       ),
                                       Text(
-                                        item.status,
+                                        item.statusName,
                                         style: const TextStyle(
                                             fontSize: 10,
                                             color:
@@ -339,107 +339,144 @@ class _HotlineState extends State<Hotline> {
                                         color: Color.fromARGB(255, 1, 1, 1),
                                         fontWeight: FontWeight.w300),
                                   ),
-                                  const Divider(
-                                    color: Colors.grey, // Màu của đường kẻ
-                                    thickness: 1.0, // Độ dày của đường kẻ
-                                    indent: 0.0, // Khoảng cách từ cạnh trái
-                                    endIndent: 0.0, // Khoảng cách từ cạnh phải
-                                  ),
                                   Visibility(
-                                    visible: !item.isRecived,
-                                    child: Row(
+                                    visible:
+                                        !item.isRecived && item.status == 'CC',
+                                    child: Column(
                                       children: [
-                                        TextButton(
-                                          style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  const Color.fromARGB(
-                                                      255, 100, 181, 247),
-                                              foregroundColor: Colors.white,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
+                                        const Divider(
+                                          color:
+                                              Colors.grey, // Màu của đường kẻ
+                                          thickness: 1.0, // Độ dày của đường kẻ
+                                          indent:
+                                              0.0, // Khoảng cách từ cạnh trái
+                                          endIndent:
+                                              0.0, // Khoảng cách từ cạnh phải
+                                        ),
+                                        Row(
+                                          children: [
+                                            TextButton(
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      const Color.fromARGB(
+                                                          255, 100, 181, 247),
+                                                  foregroundColor: Colors.white,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                  ),
+                                                  minimumSize:
+                                                      const Size(50, 30)),
+                                              onPressed: () =>
+                                                  recivedHotline(item.custID),
+                                              child: const Row(
+                                                children: [
+                                                  Icon(Icons.download,
+                                                      size: 15),
+                                                  SizedBox(
+                                                    width: 4,
+                                                  ),
+                                                  Text(
+                                                    'Nhận khách hàng',
+                                                    style:
+                                                        TextStyle(fontSize: 11),
+                                                  ),
+                                                ],
                                               ),
-                                              minimumSize: const Size(50, 30)),
-                                          onPressed: () =>
-                                              recivedHotline(item.custID),
-                                          child: const Row(
-                                            children: [
-                                              Icon(Icons.download, size: 15),
-                                              SizedBox(
-                                                width: 4,
-                                              ),
-                                              Text(
-                                                'Nhận khách hàng',
-                                                style: TextStyle(fontSize: 11),
-                                              ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
                                   ),
                                   Visibility(
-                                    visible: item.isRecived,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                    visible:
+                                        item.isRecived && item.status == 'CC',
+                                    child: Column(
                                       children: [
-                                        TextButton(
-                                          style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  const Color.fromARGB(
-                                                      255, 242, 111, 74),
-                                              foregroundColor: Colors.white,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                              ),
-                                              minimumSize: const Size(50, 30)),
-                                          onPressed: () =>
-                                              callHotline(item.phone),
-                                          child: const Row(
-                                            children: [
-                                              Icon(Icons.phone, size: 15),
-                                              SizedBox(
-                                                width: 4,
-                                              ),
-                                              Text(
-                                                'Gọi',
-                                                style: TextStyle(fontSize: 11),
-                                              ),
-                                            ],
-                                          ),
+                                        const Divider(
+                                          color:
+                                              Colors.grey, // Màu của đường kẻ
+                                          thickness: 1.0, // Độ dày của đường kẻ
+                                          indent:
+                                              0.0, // Khoảng cách từ cạnh trái
+                                          endIndent:
+                                              0.0, // Khoảng cách từ cạnh phải
                                         ),
-                                        TextButton(
-                                          style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  const Color.fromARGB(
-                                                      255, 105, 171, 64),
-                                              foregroundColor: Colors.white,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            TextButton(
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      const Color.fromARGB(
+                                                          255, 242, 111, 74),
+                                                  foregroundColor: Colors.white,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                  ),
+                                                  minimumSize:
+                                                      const Size(50, 30)),
+                                              onPressed: () =>
+                                                  callHotline(item.phone),
+                                              child: const Row(
+                                                children: [
+                                                  Icon(Icons.phone, size: 15),
+                                                  SizedBox(
+                                                    width: 4,
+                                                  ),
+                                                  Text(
+                                                    'Gọi',
+                                                    style:
+                                                        TextStyle(fontSize: 11),
+                                                  ),
+                                                ],
                                               ),
-                                              minimumSize: const Size(50, 30)),
-                                          onPressed: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
+                                            ),
+                                            TextButton(
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      const Color.fromARGB(
+                                                          255, 105, 171, 64),
+                                                  foregroundColor: Colors.white,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                  ),
+                                                  minimumSize:
+                                                      const Size(50, 30)),
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
                                                     builder: (context) =>
-                                                        const UpdateCustomer()));
-                                          },
-                                          child: const Row(
-                                            children: [
-                                              Icon(Icons.update, size: 15),
-                                              SizedBox(
-                                                width: 4,
+                                                        UpdateCustomer(
+                                                            username:
+                                                                widget.username,
+                                                            cusid: item.custID),
+                                                  ),
+                                                );
+                                              },
+                                              child: const Row(
+                                                children: [
+                                                  Icon(Icons.update, size: 15),
+                                                  SizedBox(
+                                                    width: 4,
+                                                  ),
+                                                  Text(
+                                                    'Cập nhật khách hàng',
+                                                    style:
+                                                        TextStyle(fontSize: 11),
+                                                  ),
+                                                ],
                                               ),
-                                              Text(
-                                                'Cập nhật khách hàng',
-                                                style: TextStyle(fontSize: 11),
-                                              ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),

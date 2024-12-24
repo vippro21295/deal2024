@@ -54,7 +54,7 @@ class _SettingState extends State<Setting> {
             "Cài đặt",
             style: TextStyle(
                 color: Color.fromARGB(255, 41, 34, 246),
-                fontSize: 20,
+                fontSize: 16,
                 fontWeight: FontWeight.w700),
           ),
           backgroundColor: const Color.fromARGB(255, 183, 183, 183),

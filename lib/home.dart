@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dealxemay_2024/alert.dart';
-import 'package:flutter_dealxemay_2024/hotline.dart';
+import 'package:flutter_dealxemay_2024/customer_hot/customer_hot.dart';
+import 'package:flutter_dealxemay_2024/hotline/hotline.dart';
 import 'package:flutter_dealxemay_2024/login.dart';
 import 'package:flutter_dealxemay_2024/provider/data_provider.dart';
+import 'package:flutter_dealxemay_2024/schedule/schedule.dart';
 import 'package:flutter_dealxemay_2024/setting.dart';
 import 'package:flutter_dealxemay_2024/web_view.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
@@ -52,7 +54,8 @@ class _HomeWigetState extends State<HomeWiget> {
 
   List<Widget> _buildScreen() {
     return [
-      WebViewDeal(username: username, password: password),
+      CustomerHot(username: username),
+      Schedule(username: username),
       Hotline(username: username),
       AlertContent(key: UniqueKey(), username: username),
       Setting(onLogout: _logout),
@@ -64,6 +67,12 @@ class _HomeWigetState extends State<HomeWiget> {
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.home),
         title: "Trang chủ",
+        inactiveColorPrimary: Colors.white,
+      ),
+      
+       PersistentBottomNavBarItem(
+        icon: const Icon(Icons.calendar_month),
+        title: "Lịch hẹn",
         inactiveColorPrimary: Colors.white,
       ),
       PersistentBottomNavBarItem(

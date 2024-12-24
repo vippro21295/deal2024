@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dealxemay_2024/appoinment_result.dart';
 import 'package:flutter_dealxemay_2024/firebase_options.dart';
 import 'package:flutter_dealxemay_2024/login.dart';
 import 'package:flutter_dealxemay_2024/provider/data_provider.dart';
@@ -35,8 +34,8 @@ void main() async {
     sound: true,
   );
 
-  //String? token = await firebaseMessaging.getToken() ?? "";
-  String token = "";
+  String? token = await firebaseMessaging.getToken() ?? "";
+  //String token = "";
 
   await NotificationService.init();
 
@@ -111,7 +110,7 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
         textTheme: GoogleFonts.latoTextTheme(),
       ),
-      home: const AppoinmentResult(),
+      home: const LoginScreen(),
     );
   }
 }

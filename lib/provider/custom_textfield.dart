@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class CustomTextField extends StatelessWidget {
   final String name;
@@ -16,7 +15,7 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsets.only(bottom: 15),
       child: TextFormField(
         enabled: true,
         readOnly: readOnly,
@@ -53,3 +52,5 @@ class CustomTextField extends StatelessWidget {
     );
   }
 }
+
+
