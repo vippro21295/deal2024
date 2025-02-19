@@ -34,8 +34,8 @@ void main() async {
     sound: true,
   );
 
-  String? token = await firebaseMessaging.getToken() ?? "";
-  //String token = "";
+  //String? token = await firebaseMessaging.getToken() ?? "";
+  String token = "";
 
   await NotificationService.init();
 

@@ -22,10 +22,13 @@ class CustomerHot extends StatefulWidget {
 
 class _CustomerHotState extends State<CustomerHot> {
   late Future<List<dynamic>> _dataFuture;
-  DateTime fromDate = DateTime.now().add(const Duration(days: -100));
+  late List<Map<String, String>> listMotorCodeHot = [];
+  DateTime fromDate = DateTime.now().add(const Duration(days: -1));
   DateTime toDate = DateTime.now();
   String? selectedType = '';
+  String? selectedMotor = '';
   TextEditingController searchController = TextEditingController();
+  String title = 'Khách hàng có thông tin';
   List<Map<String, String>> dataType = [
     {'id': '', 'name': 'Tất cả'},
     {'id': 'Q', 'name': 'Quá hạn(Chưa gửi)'},
@@ -40,6 +43,7 @@ class _CustomerHotState extends State<CustomerHot> {
     setState(() {
       _dataFuture = fetchDataAlert();
     });
+    getMotorCodeHot();
   }
 
   Future<List<dynamic>> fetchDataAlert() async {
@@ -50,8 +54,8 @@ class _CustomerHotState extends State<CustomerHot> {
       'typeCustomer': 'H',
       'keySearch': '',
       'departmentId': '',
-      'isSendSMS': '',
-      'motorHot': ''
+      'isSendSMS': selectedType,
+      'motorHot': selectedMotor
     };
 
     var uri = Uri.parse('${urlApi}getListCustomerAll')
@@ -65,7 +69,7 @@ class _CustomerHotState extends State<CustomerHot> {
         var data = jsonDecode(response.body); // Giai ma JSON
 
         if (data['isError'] == false) {
-          List<dynamic> results = data["lstObj"];
+          List<dynamic> results = data["lstobj"];
           // Chuyển đổi danh sách JSON thành danh sách đối tượng DataObject
           return results;
         } else {
@@ -77,6 +81,13 @@ class _CustomerHotState extends State<CustomerHot> {
     } catch (error) {
       throw Exception('Failed to fetch data: $error');
     }
+  }
+
+  Future<void> getMotorCodeHot() async {
+    var data = await CommonService.getMotorCodeHot();
+    setState(() {
+      listMotorCodeHot = data.map((e) => Map<String, String>.from(e)).toList();
+    });
   }
 
   // Hàm tải lại dữ liệu
@@ -179,9 +190,9 @@ class _CustomerHotState extends State<CustomerHot> {
           return Scaffold(
             appBar: AppBar(
               automaticallyImplyLeading: false,
-              title: const Text(
-                "Khách hàng có thông tin",
-                style: TextStyle(
+              title: Text(
+                title,
+                style: const TextStyle(
                     color: Color.fromARGB(255, 41, 34, 246),
                     fontSize: 16,
                     fontWeight: FontWeight.w600),
@@ -705,6 +716,23 @@ class _CustomerHotState extends State<CustomerHot> {
                   onChanged: (value) {
                     selectedType = value; // Cập nhật `selectedId` với `id` mới
                     // Bạn có thể thêm logic cập nhật khác ở đây nếu cần
+                  },
+                ),
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Xe quan tâm'),
+                  value: selectedMotor,
+                  isExpanded: true, // Giúp dropdown mở rộng theo chiều ngang
+                  items: listMotorCodeHot.map((item) {
+                    return DropdownMenuItem<String>(
+                      value: item['Code'],
+                      child: Text(
+                        item['Name']!,
+                        overflow: TextOverflow.ellipsis, // Cắt chữ nếu quá dài
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    selectedMotor = value;
                   },
                 ),
                 TextField(

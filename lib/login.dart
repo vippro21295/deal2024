@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_dealxemay_2024/home.dart';
+import 'package:flutter_dealxemay_2024/navigator.dart';
 import 'package:flutter_dealxemay_2024/services/toastCustom.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -91,12 +92,11 @@ class _LoginScreenState extends State<LoginScreen> {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         if (!mounted) return;
-        if (data['isError'] == false) {
-          ToastsCustom.showToastSucess("Đăng nhập thành công", context);
+        if (data['isError'] == false) {        
           saveUserCredentials(username, password);
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const HomeWiget()),
+            MaterialPageRoute(builder: (context) => const NavigatorWiget()),
           );
         } else {      
           ToastsCustom.showToastError(data['message'], context);

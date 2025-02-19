@@ -1,35 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dealxemay_2024/alert.dart';
+import 'package:flutter_dealxemay_2024/customer_hot/customer_b.dart';
+import 'package:flutter_dealxemay_2024/customer_hot/customer_d.dart';
 import 'package:flutter_dealxemay_2024/customer_hot/customer_hot.dart';
-import 'package:flutter_dealxemay_2024/hotline/hotline.dart';
-import 'package:flutter_dealxemay_2024/login.dart';
-import 'package:flutter_dealxemay_2024/provider/data_provider.dart';
-import 'package:flutter_dealxemay_2024/schedule/schedule.dart';
-import 'package:flutter_dealxemay_2024/setting.dart';
-import 'package:flutter_dealxemay_2024/web_view.dart';
-import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dealxemay_2024/customer_hot/customer_w.dart';
 
 class HomeWiget extends StatefulWidget {
-  const HomeWiget({super.key});
+  final String username;
+  const HomeWiget({required this.username, super.key});
 
   @override
   State<HomeWiget> createState() => _HomeWigetState();
 }
 
 class _HomeWigetState extends State<HomeWiget> {
-  final PersistentTabController _controller =
-      PersistentTabController(initialIndex: 0);
-  late String username = "";
-  late String password = "";
-  late String tokenLogin = "";
-  bool isLoading = true;
-
   @override
   void initState() {
     super.initState();
-    getInitUser();
   }
 
   @override
@@ -37,92 +23,189 @@ class _HomeWigetState extends State<HomeWiget> {
     super.dispose();
   }
 
-  Future<void> _logout() async {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const LoginScreen()));
-  }
-
-  getInitUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      tokenLogin = prefs.getString('token') ?? '';
-      username = prefs.getString('username') ?? '';
-      password = prefs.getString('password') ?? 'PT123456';
-      isLoading = false;
-    });
-  }
-
-  List<Widget> _buildScreen() {
-    return [
-      CustomerHot(username: username),
-      Schedule(username: username),
-      Hotline(username: username),
-      AlertContent(key: UniqueKey(), username: username),
-      Setting(onLogout: _logout),
-    ];
-  }
-
-  List<PersistentBottomNavBarItem> _navBarItem(value) {
-    return [
-      PersistentBottomNavBarItem(
-        icon: const Icon(Icons.home),
-        title: "Trang chủ",
-        inactiveColorPrimary: Colors.white,
-      ),
-      
-       PersistentBottomNavBarItem(
-        icon: const Icon(Icons.calendar_month),
-        title: "Lịch hẹn",
-        inactiveColorPrimary: Colors.white,
-      ),
-      PersistentBottomNavBarItem(
-        icon: const Icon(Icons.phone),
-        title: "Hotline",
-        inactiveColorPrimary: Colors.white,
-      ),
-      PersistentBottomNavBarItem(
-        icon: value.count == 0
-            ? const Icon(Icons.notifications_active)
-            : Badge(
-                label: Text(value.count.toString()),
-                child: const Icon(Icons.notifications_active),
-              ),
-        title: "Thông báo",
-        inactiveColorPrimary: Colors.white,
-      ),
-      PersistentBottomNavBarItem(
-        icon: const Icon(
-          Icons.settings,
-        ),
-        title: "Cài đặt",
-        inactiveColorPrimary: Colors.white,
-      ),
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(), // Loading indicator
-      );
-    } else {
-      return Consumer<CountAlert>(
-        builder: (context, value, child) => PersistentTabView(
-          context,
-          screens: _buildScreen(),
-          items: _navBarItem(value),
-          controller: _controller,
-          backgroundColor: const Color.fromARGB(255, 183, 183, 183),
-          navBarStyle: NavBarStyle.style3,
-          onItemSelected: (value) => {
-            if (value == 1)
-              {
-                context.read<CountAlert>().updateCount(0),
-              },
-          },
+    return Scaffold(
+ 
+  appBar: AppBar(
+    automaticallyImplyLeading: false,
+    title: const Text(
+      'Trang chủ',
+      style: TextStyle(
+          color: Color.fromARGB(255, 41, 34, 246),
+          fontSize: 16,
+          fontWeight: FontWeight.w600),
+    ),
+    centerTitle: true,
+    backgroundColor: const Color.fromARGB(255, 183, 183, 183),
+  ),
+  body: Padding(
+    padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+    child: Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Flexible(
+              child: Center(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width / 2.1,
+                  height: 120,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 158, 232, 249),
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12), // Bo tròn nhẹ
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerHot(username: widget.username)));
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'assets/icon/source_hotline.png',
+                          height: 50,
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'KH có thông tin',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 12, 24, 255),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Flexible(
+              child: Center(
+                child: SizedBox(
+                   width: MediaQuery.of(context).size.width / 2.1,
+                  height: 120,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 158, 232, 249),
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12), // Bo tròn nhẹ
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerW(username: widget.username)));
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'assets/icon/no-data.png',
+                          height: 50,
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'KH không có thông tin',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 12, 24, 255),
+                          ),
+                          textAlign: TextAlign.center,
+                          softWrap: true,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ],
         ),
-      );
-    }
+        const SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Flexible(
+              child: Center(
+                child: SizedBox(
+                 width: MediaQuery.of(context).size.width / 2.1,
+                  height: 120,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 158, 232, 249),
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12), // Bo tròn nhẹ
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerDeny(username: widget.username)));
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'assets/icon/deny-buy.png',
+                          height: 50,
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'KH từ chối mua xe',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 12, 24, 255),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Flexible(
+              child: Center(
+                child: SizedBox(
+                   width: MediaQuery.of(context).size.width / 2.1,
+                  height: 120,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 158, 232, 249),
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12), // Bo tròn nhẹ
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerBuy(username: widget.username)));
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'assets/icon/accept-buy.png',
+                          height: 50,
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'KH đã mua xe',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 12, 24, 255),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ],
+    ),
+  ),
+)
+
+;
   }
 }

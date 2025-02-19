@@ -312,7 +312,9 @@ class _AcceptBuyScheduleState extends State<AcceptBuySchedule> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                           minimumSize: const Size(50, 30)),
-                      onPressed: () => () {},
+                       onPressed: (){
+                        Navigator.pop(context);
+                     },
                       child: const Row(
                         children: [
                           Icon(Icons.close, size: 15),

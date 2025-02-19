@@ -4,14 +4,13 @@ class CustomTextFieldController extends StatelessWidget {
   final String name;
   final TextEditingController controller;
   final bool readOnly;
-  final double? marginbot;
+
 
   const CustomTextFieldController({
     super.key,
     required this.name,
     required this.controller,
     required this.readOnly,
-    this.marginbot 
   });
 
   @override
@@ -22,7 +21,7 @@ class CustomTextFieldController extends StatelessWidget {
       maxLength: 100,
       controller: controller,
       minLines: 1,
-      maxLines: 1,
+      maxLines: 1,      
       textAlign: TextAlign.start,
       style: const TextStyle(
         color: Colors.black,

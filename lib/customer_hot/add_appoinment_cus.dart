@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_dealxemay_2024/customer_hot/customer_hot.dart';
 import 'package:flutter_dealxemay_2024/hotline/hotline.dart';
 import 'package:flutter_dealxemay_2024/models/data_customers.dart';
 import 'package:flutter_dealxemay_2024/provider/custom_textfield_controller.dart';
@@ -8,17 +9,17 @@ import 'package:flutter_dealxemay_2024/services/toastCustom.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-class AppoinmentResult extends StatefulWidget {
+class AddAppoinmentCus extends StatefulWidget {
   final DataCustomers objectCus;
   final String userName;
-  const AppoinmentResult(
+  const AddAppoinmentCus(
       {super.key, required this.userName, required this.objectCus});
 
   @override
-  State<AppoinmentResult> createState() => _AppoinmentResultState();
+  State<AddAppoinmentCus> createState() => _AddAppoinmentCusState();
 }
 
-class _AppoinmentResultState extends State<AppoinmentResult> {
+class _AddAppoinmentCusState extends State<AddAppoinmentCus> {
   late List<dynamic> listResultDATCOC = [];
   late List<dynamic> listResultCHUACOC = [];
   bool isCheckChuaCoc = true; // mac dinh la chua coc
@@ -100,7 +101,8 @@ class _AppoinmentResultState extends State<AppoinmentResult> {
         'appoint': jsonEncode(appoint),
         'result': jsonEncode(appresult),
       };
-      var uri = Uri.parse('${urlApi}updateCustomerHotLineToHot');
+
+      var uri = Uri.parse('${urlApi}saveCustomerH');
       try {
         var response =
             await http.post(uri, headers: headers, body: jsonEncode(queryBody));
@@ -112,7 +114,7 @@ class _AppoinmentResultState extends State<AppoinmentResult> {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => Hotline(username: widget.userName)));
+                    builder: (context) => CustomerHot(username: widget.userName)));
           } else {
             if (!mounted) return;
             ToastsCustom.showToastError(data["message"], context);

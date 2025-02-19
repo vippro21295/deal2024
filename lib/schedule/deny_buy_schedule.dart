@@ -206,7 +206,9 @@ class _DenyBuyScheduleState extends State<DenyBuySchedule> {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         minimumSize: const Size(50, 30)),
-                    onPressed: () => () {},
+  onPressed: (){
+                        Navigator.pop(context);
+                     },
                     child: const Row(
                       children: [
                         Icon(Icons.close, size: 15),

@@ -84,4 +84,93 @@ class CommonService {
       throw Exception(e.toString());
     }
   }
+
+  static Future<List<dynamic>> getReasonCustomerW() async {
+    var uri = Uri.parse('${urlApi}getReasonCustomerW');
+
+    try {
+      var response = await http.get(uri);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data['isError'] == false) {
+          List<dynamic> results = data['lstobj'];
+          return results;
+        } else {
+          throw Exception(data["message"]);
+        }
+      } else {
+        throw Exception(
+            'Failed to fetch data. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<List<dynamic>> getReferenceChannel() async {
+    var uri = Uri.parse('${urlApi}getReferenceChannel');
+
+    try {
+      var response = await http.get(uri);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data['isError'] == false) {
+          List<dynamic> results = data['lstobj'];
+          return results;
+        } else {
+          throw Exception(data["message"]);
+        }
+      } else {
+        throw Exception(
+            'Failed to fetch data. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<List<dynamic>> getReasonNoInfo() async {
+    var uri = Uri.parse('${urlApi}getReasonNoInfo');
+
+    try {
+      var response = await http.get(uri);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data['isError'] == false) {
+          List<dynamic> results = data['lstobj'];
+          return results;
+        } else {
+          throw Exception(data["message"]);
+        }
+      } else {
+        throw Exception(
+            'Failed to fetch data. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  static Future<List<dynamic>> getMotorCodeHot() async {
+    var uri = Uri.parse('${urlApi}getMotorCodeHot');
+
+    try {
+      var response = await http.get(uri);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data['isError'] == false) {
+          List<dynamic> results = data['lstobj'];
+          return results;
+        } else {
+          throw Exception(data["message"]);
+        }
+      } else {
+        throw Exception(
+            'Failed to fetch data. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
 }

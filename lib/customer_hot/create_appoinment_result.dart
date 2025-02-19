@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dealxemay_2024/customer_hot/customer_hot.dart';
-import 'package:flutter_dealxemay_2024/hotline/hotline.dart';
 import 'package:flutter_dealxemay_2024/provider/custom_textfield_controller.dart';
 import 'package:flutter_dealxemay_2024/services/globals.dart';
 import 'package:flutter_dealxemay_2024/services/toastCustom.dart';
@@ -489,8 +488,8 @@ class _CreateAppoinmentResultState extends State<CreateAppoinmentResult> {
                         borderRadius: BorderRadius.circular(5),
                       ),
                       minimumSize: const Size(50, 40)),
-                  onPressed: () => {
-                    Navigator.pop(context),
+                  onPressed: () {
+                    Navigator.pop(context);
                   },
                   child: const Row(
                     children: [

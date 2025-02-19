@@ -1,41 +1,31 @@
 import 'dart:convert';
 import "package:flutter/material.dart";
-import 'package:flutter_dealxemay_2024/customer_hot/accept_buy_motor.dart';
-import 'package:flutter_dealxemay_2024/customer_hot/add_customers.dart';
-import 'package:flutter_dealxemay_2024/customer_hot/create_appoinment_result.dart';
-import 'package:flutter_dealxemay_2024/customer_hot/deny_buy_motor.dart';
-import 'package:flutter_dealxemay_2024/history.dart';
-import 'package:flutter_dealxemay_2024/hotline/appoinment_result.dart';
-import 'package:flutter_dealxemay_2024/models/data_customers.dart';
-import 'package:flutter_dealxemay_2024/schedule/accept_buy_schedule.dart';
-import 'package:flutter_dealxemay_2024/schedule/deny_buy_schedule.dart';
-import 'package:flutter_dealxemay_2024/schedule/update_schedule.dart';
-import 'package:flutter_dealxemay_2024/services/common_service.dart';
-import 'package:flutter_dealxemay_2024/services/toastCustom.dart';
-import 'package:flutter_dealxemay_2024/hotline/update_customer.dart';
 import 'package:http/http.dart' as http;
 import '../services/globals.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class Schedule extends StatefulWidget {
+
+class CustomerDeny extends StatefulWidget {
   final String username;
-  const Schedule({super.key, required this.username});
+  const CustomerDeny({super.key, required this.username});
 
   @override
-  State<Schedule> createState() => _ScheduleState();
+  State<CustomerDeny> createState() => _CustomerDenyState();
 }
 
-class _ScheduleState extends State<Schedule> {
+class _CustomerDenyState extends State<CustomerDeny> {
   late Future<List<dynamic>> _dataFuture;
   DateTime fromDate = DateTime.now().add(const Duration(days: -1));
   DateTime toDate = DateTime.now();
-  String? selectedType = 'CHT';
+  String? selectedType = '';
   TextEditingController searchController = TextEditingController();
+  String title = 'Khách hàng từ chối mua xe';
   List<Map<String, String>> dataType = [
-    {'id': 'TC', 'name': 'Tất cả'},
-    {'id': 'CHT', 'name': 'Chưa hoàn tất'},
-    {'id': 'HT', 'name': 'Hoàn tất'},
+    {'id': '', 'name': 'Tất cả'},
+    {'id': 'Q', 'name': 'Quá hạn(Chưa gửi)'},
+    {'id': 'QD', 'name': 'Quá hạn(Đã gửi)'},
+    {'id': 'C', 'name': 'Chưa gửi(chưa quá hạn)'},
+    {'id': 'R', 'name': 'Đã gửi'},
   ];
 
   @override
@@ -50,14 +40,15 @@ class _ScheduleState extends State<Schedule> {
     var queryParameters = {
       'username': widget.username,
       'fromDate': fromDate.toIso8601String(),
-      'toDate': toDate.toIso8601String(),   
-      'keySearch': searchController.text,
-      'day': '',
-      'departmentId': '0',
-      'dataType': selectedType
+      'toDate': toDate.toIso8601String(),
+      'typeCustomer': 'D',
+      'keySearch': '',
+      'departmentId': '',
+      'isSendSMS': '',
+      'motorHot': ''
     };
 
-    var uri = Uri.parse('${urlApi}getListSchedule')
+    var uri = Uri.parse('${urlApi}getListCustomerAll')
         .replace(queryParameters: queryParameters);
 
     try {
@@ -89,73 +80,6 @@ class _ScheduleState extends State<Schedule> {
     });
   }
 
-  Future<void> recivedHotline(custid) async {
-    var queryParameters = {
-      'custid': custid,
-      'username': widget.username,
-    };
-
-    var uri = Uri.parse('${urlApi}recivedHotline')
-        .replace(queryParameters: queryParameters);
-
-    try {
-      var response =
-          await http.get(uri, headers: {'Content-Type': 'application/json'});
-
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body); // Giai ma JSON
-        if (!mounted) return;
-        if (data['isError'] == false) {
-          ToastsCustom.showToastSucess(data['message'], context);
-          _refreshData();
-        } else {
-          ToastsCustom.showToastError(data['message'], context);
-        }
-      } else {
-        throw Exception('Error from API');
-      }
-    } catch (error) {
-      throw Exception('Failed to fetch data: $error');
-    }
-  }
-
-  Future<void> callHotline(phone) async {
-    final Uri callUri = Uri(
-      scheme: 'tel',
-      path: "+84${phone.toString().substring(1, 10)}",
-    );
-    if (await canLaunchUrl(callUri)) {
-      await launchUrl(callUri);
-    } else {
-      // Nếu không mở được ứng dụng gọi điện
-      if (!mounted) return;
-      ToastsCustom.showToastError("Không mở được ứng dụng gọi điện", context);
-    }
-  }
-
-  Future<void> createAppoinment(item, context) async {
-    var queryParameters = {
-      "custId": item["CustID"]
-    };
-
-     var uri = Uri.parse('${urlApi}getAppointMentResultBefore')
-        .replace(queryParameters: queryParameters);
-
-    var response = await http.get(uri);
-    if(response.statusCode == 200){
-      var data = jsonDecode(response.body);
-      if(data["isError"] == false){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> CreateAppoinmentResult(userName: widget.username, objectCus: item, lastAppointmentResult: data["obj"])));
-      }
-    }
-  }
-
-Future<void> openHistory(item, context) async {
-    var data = await CommonService.getHistoryCustomer(item["CustID"]);
-    DialogHistory.showHistory(context, data);
-  }
-
-
   @override
   void dispose() {
     super.dispose();
@@ -179,14 +103,14 @@ Future<void> openHistory(item, context) async {
           return Scaffold(
             appBar: AppBar(
               automaticallyImplyLeading: false,
-              title: const Text(
-                "Lịch hẹn chăm sóc",
-                style: TextStyle(
+              title:  Text(title                ,
+                style: const TextStyle(
                     color: Color.fromARGB(255, 41, 34, 246),
                     fontSize: 16,
                     fontWeight: FontWeight.w600),
               ),
               actions: [
+                
                 IconButton(
                   onPressed: () => showFilterDialog(context),
                   icon: const Icon(Icons.search,
@@ -232,7 +156,7 @@ Future<void> openHistory(item, context) async {
                                       ),
                                       Expanded(
                                         child: Text(
-                                          item["ReferenceChannelName"] ?? "",
+                                          item["ReferenceChannelName"],
                                           overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
                                             fontSize: 11,
@@ -242,7 +166,7 @@ Future<void> openHistory(item, context) async {
                                         ),
                                       ),
                                       Text(
-                                        item["AppointmentStatus"] ?? "",
+                                        item["LastAppointmentStatus"],
                                         style: const TextStyle(
                                             fontSize: 10,
                                             color:
@@ -260,7 +184,7 @@ Future<void> openHistory(item, context) async {
                                           children: [
                                             Expanded(
                                               child: Text(
-                                                item["FullName"] ?? "",
+                                                item["FullName"],
                                                 overflow: TextOverflow.ellipsis,
                                                 style: const TextStyle(
                                                   fontSize: 13,
@@ -328,7 +252,7 @@ Future<void> openHistory(item, context) async {
                                                   width: 5,
                                                 ),
                                                 Text(
-                                                  item["AppointmentDate"] ?? "",
+                                                  item["LastAppointmentDate"],
                                                   style: const TextStyle(
                                                     fontSize: 10,
                                                     color: Color.fromARGB(
@@ -345,7 +269,7 @@ Future<void> openHistory(item, context) async {
                                           children: [
                                             Expanded(
                                               child: Text(
-                                                item["LastAppointmentResult"] ?? "",
+                                                item["AppointmentResult"] ?? "",
                                                 style: const TextStyle(
                                                     fontSize: 11,
                                                     color: Color.fromARGB(
@@ -389,221 +313,13 @@ Future<void> openHistory(item, context) async {
                                     endIndent: 0.0, // Khoảng cách từ cạnh phải
                                   ),
                                   Text(
-                                    item["ApoinmentNote"] ?? "",
+                                    item["LastAppointmentNote"] ?? "",
                                     style: const TextStyle(
                                         fontSize: 12,
                                         color: Color.fromARGB(255, 1, 1, 1),
                                         fontWeight: FontWeight.w300),
                                   ),
-                                  Visibility(
-                                    visible: true,
-                                    child: Column(
-                                      children: [
-                                        const Divider(
-                                          color:
-                                              Colors.grey, // Màu của đường kẻ
-                                          thickness: 1.0, // Độ dày của đường kẻ
-                                          indent:
-                                              0.0, // Khoảng cách từ cạnh trái
-                                          endIndent:
-                                              0.0, // Khoảng cách từ cạnh phải
-                                        ),
-                                        SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          child: Row(
-                                            children: [
-                                              TextButton(
-                                                style: ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        const Color.fromARGB(
-                                                            255, 145, 145, 2),
-                                                    foregroundColor:
-                                                        Colors.white,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5),
-                                                    ),
-                                                    minimumSize:
-                                                        const Size(50, 30)),
-                                                onPressed: () =>
-                                                    createAppoinment(item, context),
-                                                child: const Row(
-                                                  children: [
-                                                    Icon(Icons.add, size: 15),
-                                                    SizedBox(
-                                                      width: 4,
-                                                    ),
-                                                    Text(
-                                                      'Tạo kết quả đặt lịch',
-                                                      style: TextStyle(
-                                                          fontSize: 11),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                width: 5,
-                                              ),
-                                              TextButton(
-                                                style: ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        const Color.fromARGB(
-                                                            255, 100, 181, 247),
-                                                    foregroundColor:
-                                                        Colors.white,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5),
-                                                    ),
-                                                    minimumSize:
-                                                        const Size(50, 30)),
-                                                onPressed: () =>
-                                                    Navigator.push(context, MaterialPageRoute(builder: (context)=> UpdateSchedule(objCustomer: item, username: widget.username,))),
-                                                child: const Row(
-                                                  children: [
-                                                    Icon(Icons.update,
-                                                        size: 15),
-                                                    SizedBox(
-                                                      width: 4,
-                                                    ),
-                                                    Text(
-                                                      'Cập nhật',
-                                                      style: TextStyle(
-                                                          fontSize: 11),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                width: 5,
-                                              ),
-                                              TextButton(
-                                                style: ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        const Color.fromARGB(
-                                                            255, 31, 190, 6),
-                                                    foregroundColor:
-                                                        Colors.white,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5),
-                                                    ),
-                                                    minimumSize:
-                                                        const Size(50, 30)),
-                                                onPressed: () => {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              AcceptBuySchedule(
-                                                                objCustomer:
-                                                                    item,
-                                                                username: widget
-                                                                    .username,
-                                                              )))
-                                                },
-                                                child: const Row(
-                                                  children: [
-                                                    Icon(Icons.open_in_new,
-                                                        size: 15),
-                                                    SizedBox(
-                                                      width: 4,
-                                                    ),
-                                                    Text(
-                                                      'Đồng ý',
-                                                      style: TextStyle(
-                                                          fontSize: 11),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                width: 5,
-                                              ),
-                                              TextButton(
-                                                style: ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        const Color.fromARGB(
-                                                            255, 222, 79, 17),
-                                                    foregroundColor:
-                                                        Colors.white,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5),
-                                                    ),
-                                                    minimumSize:
-                                                        const Size(50, 30)),
-                                                onPressed: () => Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            DenyBuySchedule(
-                                                                objCustomer:
-                                                                    item,
-                                                                username: widget
-                                                                    .username))),
-                                                child: const Row(
-                                                  children: [
-                                                    Icon(Icons.close, size: 15),
-                                                    SizedBox(
-                                                      width: 4,
-                                                    ),
-                                                    Text(
-                                                      'Từ chối',
-                                                      style: TextStyle(
-                                                          fontSize: 11),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                width: 5,
-                                              ),
-                                              
-                                              TextButton(
-                                                style: ElevatedButton.styleFrom(
-                                                    backgroundColor: const
-                                                        Color.fromARGB(255, 122, 1, 110),
-                                                    foregroundColor:
-                                                        Colors.white,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5),
-                                                    ),
-                                                    minimumSize:
-                                                        const Size(50, 30)),
-                                                onPressed: () =>
-                                                    openHistory(item, context),
-                                                child: const Row(
-                                                  children: [
-                                                    Icon(Icons.calculate, size: 15),
-                                                    SizedBox(
-                                                      width: 4,
-                                                    ),
-                                                    Text(
-                                                      'Lịch sử chăm sóc',
-                                                      style: TextStyle(
-                                                          fontSize: 11),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                 
                                 ],
                               ),
                             ),
@@ -612,7 +328,7 @@ Future<void> openHistory(item, context) async {
                       },
                     )
                   : const Center(
-                      child: Text('Hiện tại chưa có lịch hẹn chăm sóc')),
+                      child: Text('Hiện tại chưa có khách hàng có thông tin')),
             ),
           );
         } else {
@@ -624,7 +340,6 @@ Future<void> openHistory(item, context) async {
 
   void showFilterDialog(BuildContext context) {
     // Khởi tạo các giá trị ban đầu cho bộ lọc
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -680,7 +395,7 @@ Future<void> openHistory(item, context) async {
                   ],
                 ),
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'Hình thức'),
+                  decoration: const InputDecoration(labelText: 'Gửi tin nhắn'),
                   value: selectedType, // Giá trị ban đầu là `id`
                   items: dataType.map((item) {
                     return DropdownMenuItem<String>(

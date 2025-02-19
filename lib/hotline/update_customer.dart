@@ -27,6 +27,7 @@ class _UpdateCustomerState extends State<UpdateCustomer> {
   final dropDownKey = GlobalKey<DropdownSearchState>();
   TextEditingController txtExtPhone = TextEditingController();
   TextEditingController txtThoiGian = TextEditingController();
+  TextEditingController txtHoTen  = TextEditingController();
   late List<String> lstExtPhone = [];
   String selectedModelMotor = "";
 
@@ -98,12 +99,14 @@ class _UpdateCustomerState extends State<UpdateCustomer> {
     } else {
       ToastsCustom.showToastWarning(
           "Vui lòng nhập thời gian chăm sóc là số phút", context);
+      txtThoiGian.text = '0';
       return;
     }
 
     dataCus.statusLevel = 5303;
     dataCus.extPhone = getExtPhone();
     dataCus.interestingColors = selectedModelMotor;
+    dataCus.fullName = txtHoTen.text;
 
     Navigator.push(
         context,
@@ -173,6 +176,7 @@ class _UpdateCustomerState extends State<UpdateCustomer> {
     super.initState();
     infoCustomer = loadInfoCustomer(); // Gọi một hàm async trả về Future
     txtThoiGian.text = "0";
+  
   }
 
   Future<dynamic> loadInfoCustomer() async {
@@ -200,6 +204,7 @@ class _UpdateCustomerState extends State<UpdateCustomer> {
         } else if (snapshot.hasData) {
           // Hiển thị dữ liệu sau khi đã tải thành công
           dynamic data = snapshot.data!;
+          txtHoTen.text = data["FullName"].toString();
           return Scaffold(
             appBar: AppBar(
               title: const Text(
@@ -232,10 +237,13 @@ class _UpdateCustomerState extends State<UpdateCustomer> {
                       children: [
                         Flexible(
                           flex: 6,
-                          child: CustomTextField(
-                            name: "Họ tên khách hàng:",
-                            initValue: data["FullName"].toString(),
-                            readOnly: true,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 15.0),
+                            child: CustomTextFieldController(
+                              name: "Họ tên khách hàng:",
+                              controller: txtHoTen,
+                              readOnly: false ,
+                            ),
                           ),
                         ),
                       ],
@@ -256,11 +264,11 @@ class _UpdateCustomerState extends State<UpdateCustomer> {
                         Flexible(
                           flex: 4,
                           child: Padding(
-                            padding: const EdgeInsets.only(bottom: 20.0),
+                            padding: const EdgeInsets.only(bottom: 15.0),
                             child: CustomTextFieldController(
                               name: "Thời gian chăm sóc: (phút)",
                               controller: txtThoiGian,
-                              readOnly: false,
+                              readOnly: false,                            
                             ),
                           ),
                         ),
@@ -272,8 +280,7 @@ class _UpdateCustomerState extends State<UpdateCustomer> {
                           child: CustomTextFieldController(
                             name: "Số điện thoại khác:",
                             controller: txtExtPhone,
-                            readOnly: false,
-                            marginbot: 20,
+                            readOnly: false,                         
                           ),
                         ),
                         const SizedBox(
