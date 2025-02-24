@@ -118,12 +118,15 @@ class _CreateAppoinmentResultState extends State<CreateAppoinmentResult> {
   }
 
   Future<dynamic> addAppointmentResult() async {
+   
     // kiem tra dieu kien truoc khi luu
+    var jsonCustomer = jsonEncode(widget.objectCus);
+    print(jsonCustomer);
     final headers = {'Content-Type': 'application/json'};
     if (validateSubmit()) {
       var queryBody = {
         'username': widget.userName,
-        'customer': jsonEncode(widget.objectCus),
+        'customer': jsonCustomer,
         'appoint': jsonEncode(appoint),
         'result': jsonEncode(appresult),
       };

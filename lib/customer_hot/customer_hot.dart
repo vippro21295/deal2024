@@ -143,7 +143,6 @@ class _CustomerHotState extends State<CustomerHot> {
 
   Future<void> createAppoinment(item, context) async {
     var queryParameters = {"custId": item["CustID"]};
-
     var uri = Uri.parse('${urlApi}getAppointMentResultBefore')
         .replace(queryParameters: queryParameters);
 

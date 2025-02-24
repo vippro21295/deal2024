@@ -275,7 +275,7 @@ class _CustomerBuyState extends State<CustomerBuy> {
                       },
                     )
                   : const Center(
-                      child: Text('Hiện tại chưa có khách hàng có thông tin')),
+                      child: Text('Hiện tại chưa có khách hàng đã mua xe')),
             ),
           );
         } else {

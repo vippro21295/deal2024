@@ -328,7 +328,7 @@ class _CustomerDenyState extends State<CustomerDeny> {
                       },
                     )
                   : const Center(
-                      child: Text('Hiện tại chưa có khách hàng có thông tin')),
+                      child: Text('Hiện tại chưa có khách hàng từ chối mua xe')),
             ),
           );
         } else {

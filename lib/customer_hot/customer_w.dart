@@ -234,7 +234,7 @@ class _CustomerWState extends State<CustomerW> {
                       },
                     )
                   : const Center(
-                      child: Text('Hiện tại chưa có khách hàng có thông tin')),
+                      child: Text('Hiện tại chưa có khách hàng không có thông tin')),
             ),
           );
         } else {
